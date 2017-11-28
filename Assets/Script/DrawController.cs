@@ -41,8 +41,9 @@ public class DrawController : MonoBehaviour
 
         Line = line.AddComponent<LineRenderer>();
         Line.material = new Material(Shader.Find("Standard"));
-        Line.startWidth = Line.endWidth = 0.03f;
-        Line.startColor = Line.endColor = Color.red;
+        Line.material.color = Color.red;
+        Line.startWidth = Line.endWidth = 0.05f;
+        //Line.startColor = Line.endColor = Color.red;
         Line.positionCount = 0;
 
         drawUI = GetComponent<DrawUI>();
