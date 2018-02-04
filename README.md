@@ -1,8 +1,8 @@
 # Perspectio
-Perspectio - guess perspective.
+Perspectio - draw perspective.
 
 This is a game where you can learn how to draw a perspective!
 
-Concept:
+### Concept
 
 ![Concept](.github/concept.gif?raw=true)
