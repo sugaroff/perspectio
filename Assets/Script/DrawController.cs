@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class DrawController : MonoBehaviour
 {
-    DrawUI drawUI;
+    public DrawUI drawUI;
+    public DrawingBoard DrawingBoard;
     bool isMousePressed;
     bool isEnabled = false;
 
@@ -25,8 +27,7 @@ public class DrawController : MonoBehaviour
                 drawUI.HideUI();
         }
     }
-
-    public DrawingBoard DrawingBoard { get; private set; }
+    
     public LineRenderer Line { get; private set; }
 
 
@@ -34,8 +35,6 @@ public class DrawController : MonoBehaviour
 
     private void Awake()
     {
-        DrawingBoard = GetComponentInChildren<DrawingBoard>();
-
         GameObject line = new GameObject();
         line.transform.parent = transform;
 
@@ -45,8 +44,6 @@ public class DrawController : MonoBehaviour
         Line.startWidth = Line.endWidth = 0.05f;
         //Line.startColor = Line.endColor = Color.red;
         Line.positionCount = 0;
-
-        drawUI = GetComponent<DrawUI>();
     }
 
     private void Update()
@@ -130,6 +127,7 @@ public class DrawController : MonoBehaviour
     public void Redraw()
     {
         Line.positionCount = 0;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void Ready()

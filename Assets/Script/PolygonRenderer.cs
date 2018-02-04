@@ -47,7 +47,6 @@ public class PolygonRenderer : MonoBehaviour
 
     private void FillLists()
     {
-
         /*
 		 * three doubly linked lists (points list,reflective points list, ears list) are
 		 * maintained in the "PolyPointList" arry.
@@ -71,7 +70,6 @@ public class PolygonRenderer : MonoBehaviour
 
         for (int i = 1; i <= Pointcount; i++)
         {
-
             PolyPointList[i] = p;
 
             if (i == 1)
@@ -83,7 +81,6 @@ public class PolygonRenderer : MonoBehaviour
 
             if (isReflective(i))
             {
-
                 PolyPointList[i].PrevRefl = T_Reflective;
 
                 if (T_Reflective == -1)
@@ -98,11 +95,9 @@ public class PolygonRenderer : MonoBehaviour
 
                 PolyPointList[i].PrevEar = -1;
                 PolyPointList[i].NextEar = -1;
-
             }
             else
             {
-
                 PolyPointList[i].PrevRefl = -1;
                 PolyPointList[i].NextRefl = -1;
                 PolyPointList[i].isEar = true;
@@ -120,24 +115,18 @@ public class PolygonRenderer : MonoBehaviour
 
                 PolyPointList[i].NextEar = -1;
             }
-
         }
-
-
+        
         int Con = PolyPointList[0].NextEar;
 
         while (Con != -1)
         {
-
             if (!isCleanEar(Con))
             {
                 RemoveEar(Con);
             }
             Con = PolyPointList[Con].NextEar;
-
         }
-
-
     }
 
 
@@ -147,12 +136,10 @@ public class PolygonRenderer : MonoBehaviour
 	 */
     private void Triangulate()
     {
-
         int i;
 
         while (Pointcount > 3)
         {
-
             /*
 			 * The Two-Ears Theorem: "Except for triangles every 
 			 * simple ploygon has at least two non-overlapping ears"
@@ -170,57 +157,39 @@ public class PolygonRenderer : MonoBehaviour
 
             if (!isReflective(PrevP))
             {
-
                 if (isCleanEar(PrevP))
                 {
-
                     if (!PolyPointList[PrevP].isEar)
                     {
-
                         AddEar(PrevP);
                     }
-
                 }
                 else
                 {
-
                     if (PolyPointList[PrevP].isEar)
                     {
-
                         RemoveEar(PrevP);
                     }
-
                 }
-
             }
 
             if (!isReflective(NextP))
             {
-
                 if (isCleanEar(NextP))
                 {
-
                     if (!PolyPointList[NextP].isEar)
                     {
-
                         AddEar(NextP);
                     }
-
                 }
                 else
                 {
-
                     if (PolyPointList[NextP].isEar)
                     {
-
                         RemoveEar(NextP);
                     }
-
                 }
-
             }
-
-
         }
 
         int y = PolyPointList[0].NextP;
@@ -228,49 +197,44 @@ public class PolygonRenderer : MonoBehaviour
         int z = PolyPointList[y].NextP;
 
         m_TriPointList.Add(new Vector3(x, y, z));
-
     }
 
 
 
     private void DrawPolygon()
     {
-
         m_MeshFilter = (MeshFilter)GetComponent(typeof(MeshFilter));
         m_MeshRenderer = (MeshRenderer)GetComponent(typeof(MeshRenderer));
         m_MeshRenderer.GetComponent<Renderer>().material = Mat;
         m_Mesh = m_MeshFilter.mesh;
 
-        int vertex_count = Points.Count;
-        int triangle_count = m_TriPointList.Count;
+        int vertex_count = (Points.Count * 2) - 1;
+        int triangle_count = m_TriPointList.Count * 3 * 2;
 
         /*
 		 * Mesh vertices
 		 */
         Vector3[] vertices = new Vector3[vertex_count];
 
-        for (int i = 0; i < vertex_count; i++)
+        for (int i = 0; i < Points.Count; i++)
         {
-
-            vertices[i] = Points[i];
+            vertices[i] = vertices[vertex_count - 1 - i] = Points[i];
         }
-
-        Points.Clear();
 
         m_Mesh.vertices = vertices;
 
         /*
 		 * Mesh trangles
 		 */
-        int[] tri = new int[triangle_count * 3];
 
-        for (int i = 0, j = 0; i < triangle_count; i++, j += 3)
+
+        int[] tri = new int[triangle_count];
+
+        for (int i = 0, j = 0; i < m_TriPointList.Count; i++, j += 3)
         {
-
-            tri[j] = (int)(m_TriPointList[i].x - 1);
-            tri[j + 1] = (int)(m_TriPointList[i].y - 1);
-            tri[j + 2] = (int)(m_TriPointList[i].z - 1);
-
+            tri[j] = tri[triangle_count - 1 - j] = (int)(m_TriPointList[i].x - 1);
+            tri[j + 1] = tri[triangle_count - 2 - j] = (int)(m_TriPointList[i].y - 1);
+            tri[j + 2] = tri[triangle_count - 3 - j] = (int)(m_TriPointList[i].z - 1);
         }
 
         m_Mesh.triangles = tri;
@@ -297,9 +261,9 @@ public class PolygonRenderer : MonoBehaviour
             m_Uv[i] = new Vector2(0, 0);
         }
 
-
         m_Mesh.uv = m_Uv;
 
+        Points.Clear();
     }
 
 
@@ -310,7 +274,6 @@ public class PolygonRenderer : MonoBehaviour
 
     private bool isCleanEar(int Ear)
     {
-
         /*
 		 * Barycentric Technique is used to test
 		 * if the reflective vertices are in selected ears
@@ -334,7 +297,6 @@ public class PolygonRenderer : MonoBehaviour
 
         while (i != -1)
         {
-
             v2 = Points[i - 1] - Points[Ear - 1];
 
             dot00 = Vector2.Dot(v0, v0);
@@ -358,7 +320,6 @@ public class PolygonRenderer : MonoBehaviour
 
     private bool isReflective(int P)
     {
-
         /*
 		 * vector cross product is used to determin the reflectiveness of vertices
 		 * because "Sin" values of angles are always - if the angle > 180 
@@ -377,7 +338,6 @@ public class PolygonRenderer : MonoBehaviour
 
     private void RemoveEar(int Ear)
     {
-
         int PrevEar = PolyPointList[Ear].PrevEar;
         int NextEar = PolyPointList[Ear].NextEar;
 
@@ -400,7 +360,6 @@ public class PolygonRenderer : MonoBehaviour
 
     private void AddEar(int Ear)
     {
-
         int NextEar = PolyPointList[0].NextEar;
 
         PolyPointList[0].NextEar = Ear;
@@ -412,16 +371,12 @@ public class PolygonRenderer : MonoBehaviour
 
         if (NextEar != -1)
         {
-
             PolyPointList[NextEar].PrevEar = Ear;
-
         }
-
     }
 
     private void RemoverReflective(int P)
     {
-
         int PrevRefl = PolyPointList[P].PrevRefl;
         int NextRefl = PolyPointList[P].NextRefl;
 
@@ -438,12 +393,10 @@ public class PolygonRenderer : MonoBehaviour
         {
             PolyPointList[NextRefl].PrevRefl = PrevRefl;
         }
-
     }
 
     private void AddReflective(int P)
     {
-
         int NextRefl = PolyPointList[0].NextRefl;
 
         PolyPointList[0].NextRefl = P;
@@ -453,16 +406,12 @@ public class PolygonRenderer : MonoBehaviour
 
         if (NextRefl != -1)
         {
-
             PolyPointList[NextRefl].PrevRefl = P;
-
         }
-
     }
 
     private void RemoveP(int P)
     {
-
         int NextP = PolyPointList[P].NextP;
         int PrevP = PolyPointList[P].PrevP;
 
@@ -474,6 +423,4 @@ public class PolygonRenderer : MonoBehaviour
 
         --Pointcount;
     }
-
-
 }
