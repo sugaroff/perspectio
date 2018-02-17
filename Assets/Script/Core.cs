@@ -37,17 +37,22 @@ public class Core : MonoBehaviour
 
     IEnumerator StartingAnimations()
     {
+#if FAST_EXECUTION
+        mainCamera.MoveToFigure();
+        yield return null;
+#else
         yield return new WaitForSeconds(2);
 
         mainCamera.MoveToFigure();
         figure.FadeOut();
+#endif
     }
 
     #region Events
 
     private void DrawController_LineIsReady()
     {
-        drawController.IsEnabled = false;
+        //drawController.IsEnabled = false;
         figure.FadeIn();
         ResultsController resultController = GetComponentInChildren<ResultsController>();
         resultController.CalculateResult();
@@ -59,5 +64,5 @@ public class Core : MonoBehaviour
         drawController.IsEnabled = true;
     }
 
-    #endregion
+#endregion
 }

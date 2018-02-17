@@ -43,7 +43,9 @@ public class ResultsController : MonoBehaviour {
             {
                 GameObject go = new GameObject();
                 PolygonRenderer polRenderer = go.AddComponent<PolygonRenderer>();
-                polRenderer.Points = ConvertIntPointsToVectors3(polygon);
+                List<Vector3> points = ConvertIntPointsToVectors3(polygon);
+                points.Reverse();
+                polRenderer.Points = points;
                 polRenderer.Mat = Resources.Load("Polygon", typeof(Material)) as Material;
             }
         }

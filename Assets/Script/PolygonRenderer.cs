@@ -10,14 +10,14 @@ public class PolygonRenderer : MonoBehaviour
 
     private struct PolyPoint
     {
-        public int NextP;
-        public int PrevP;
+        public int PointNext;
+        public int PointPrev;
 
-        public int NextEar;
-        public int PrevEar;
+        public int EarNext;
+        public int EarPrev;
 
-        public int NextRefl;
-        public int PrevRefl;
+        public int ReflNext;
+        public int ReflPrev;
 
         public bool isEar;
 
@@ -57,12 +57,12 @@ public class PolygonRenderer : MonoBehaviour
         PolyPoint p = new PolyPoint();
 
         PolyPointList[0] = p;
-        PolyPointList[0].NextP = 1;
-        PolyPointList[0].PrevP = -1;
-        PolyPointList[0].NextEar = -1;
-        PolyPointList[0].PrevEar = -1;
-        PolyPointList[0].NextRefl = -1;
-        PolyPointList[0].PrevRefl = -1;
+        PolyPointList[0].PointNext = 1;
+        PolyPointList[0].PointPrev = -1;
+        PolyPointList[0].EarNext = -1;
+        PolyPointList[0].EarPrev = -1;
+        PolyPointList[0].ReflNext = -1;
+        PolyPointList[0].ReflPrev = -1;
         PolyPointList[0].isEar = false;
 
         int T_Reflective = -1;
@@ -73,51 +73,51 @@ public class PolygonRenderer : MonoBehaviour
             PolyPointList[i] = p;
 
             if (i == 1)
-                PolyPointList[i].PrevP = Pointcount;
+                PolyPointList[i].PointPrev = Pointcount;
             else
-                PolyPointList[i].PrevP = i - 1;
+                PolyPointList[i].PointPrev = i - 1;
 
-            PolyPointList[i].NextP = (i % Pointcount) + 1;
+            PolyPointList[i].PointNext = (i % Pointcount) + 1;
 
             if (isReflective(i))
             {
-                PolyPointList[i].PrevRefl = T_Reflective;
+                PolyPointList[i].ReflPrev = T_Reflective;
 
                 if (T_Reflective == -1)
                 {
-                    PolyPointList[0].NextRefl = i;
+                    PolyPointList[0].ReflNext = i;
                 }
                 else
-                    PolyPointList[T_Reflective].NextRefl = i;
+                    PolyPointList[T_Reflective].ReflNext = i;
 
                 T_Reflective = i;
-                PolyPointList[i].NextRefl = -1;
+                PolyPointList[i].ReflNext = -1;
 
-                PolyPointList[i].PrevEar = -1;
-                PolyPointList[i].NextEar = -1;
+                PolyPointList[i].EarPrev = -1;
+                PolyPointList[i].EarNext = -1;
             }
             else
             {
-                PolyPointList[i].PrevRefl = -1;
-                PolyPointList[i].NextRefl = -1;
+                PolyPointList[i].ReflPrev = -1;
+                PolyPointList[i].ReflNext = -1;
                 PolyPointList[i].isEar = true;
 
-                PolyPointList[i].PrevEar = T_Convex;
+                PolyPointList[i].EarPrev = T_Convex;
 
                 if (T_Convex == -1)
                 {
-                    PolyPointList[0].NextEar = i;
+                    PolyPointList[0].EarNext = i;
                 }
                 else
-                    PolyPointList[T_Convex].NextEar = i;
+                    PolyPointList[T_Convex].EarNext = i;
 
                 T_Convex = i;
 
-                PolyPointList[i].NextEar = -1;
+                PolyPointList[i].EarNext = -1;
             }
         }
         
-        int Con = PolyPointList[0].NextEar;
+        int Con = PolyPointList[0].EarNext;
 
         while (Con != -1)
         {
@@ -125,7 +125,7 @@ public class PolygonRenderer : MonoBehaviour
             {
                 RemoveEar(Con);
             }
-            Con = PolyPointList[Con].NextEar;
+            Con = PolyPointList[Con].EarNext;
         }
     }
 
@@ -145,10 +145,10 @@ public class PolygonRenderer : MonoBehaviour
 			 * simple ploygon has at least two non-overlapping ears"
 			 * so there i will always have a value
 			 */
-            i = PolyPointList[0].NextEar;
+            i = PolyPointList[0].EarNext;
 
-            int PrevP = PolyPointList[i].PrevP;
-            int NextP = PolyPointList[i].NextP;
+            int PrevP = PolyPointList[i].PointPrev;
+            int NextP = PolyPointList[i].PointNext;
 
             m_TriPointList.Add(new Vector3(PrevP, i, NextP));
 
@@ -192,9 +192,9 @@ public class PolygonRenderer : MonoBehaviour
             }
         }
 
-        int y = PolyPointList[0].NextP;
-        int x = PolyPointList[y].PrevP;
-        int z = PolyPointList[y].NextP;
+        int y = PolyPointList[0].PointNext;
+        int x = PolyPointList[y].PointPrev;
+        int z = PolyPointList[y].PointNext;
 
         m_TriPointList.Add(new Vector3(x, y, z));
     }
@@ -289,11 +289,11 @@ public class PolygonRenderer : MonoBehaviour
         float U;
         float V;
 
-        Vector2 v0 = Points[PolyPointList[Ear].PrevP - 1] - Points[Ear - 1];
-        Vector2 v1 = Points[PolyPointList[Ear].NextP - 1] - Points[Ear - 1];
+        Vector2 v0 = Points[PolyPointList[Ear].PointPrev - 1] - Points[Ear - 1];
+        Vector2 v1 = Points[PolyPointList[Ear].PointNext - 1] - Points[Ear - 1];
         Vector2 v2;
 
-        int i = PolyPointList[0].NextRefl;
+        int i = PolyPointList[0].ReflNext;
 
         while (i != -1)
         {
@@ -312,7 +312,7 @@ public class PolygonRenderer : MonoBehaviour
             if ((U > 0) && (V > 0) && (U + V < 1))
                 return false;
 
-            i = PolyPointList[i].NextRefl;
+            i = PolyPointList[i].ReflNext;
         }
 
         return true;
@@ -325,8 +325,8 @@ public class PolygonRenderer : MonoBehaviour
 		 * because "Sin" values of angles are always - if the angle > 180 
 		 */
 
-        Vector2 v0 = Points[PolyPointList[P].PrevP - 1] - Points[P - 1];
-        Vector2 v1 = Points[PolyPointList[P].NextP - 1] - Points[P - 1];
+        Vector2 v0 = Points[PolyPointList[P].PointPrev - 1] - Points[P - 1];
+        Vector2 v1 = Points[PolyPointList[P].PointNext - 1] - Points[P - 1];
 
         Vector3 A = Vector3.Cross(v0, v1);
 
@@ -338,88 +338,88 @@ public class PolygonRenderer : MonoBehaviour
 
     private void RemoveEar(int Ear)
     {
-        int PrevEar = PolyPointList[Ear].PrevEar;
-        int NextEar = PolyPointList[Ear].NextEar;
+        int PrevEar = PolyPointList[Ear].EarPrev;
+        int NextEar = PolyPointList[Ear].EarNext;
 
         PolyPointList[Ear].isEar = false;
 
         if (PrevEar == -1)
         {
-            PolyPointList[0].NextEar = NextEar;
+            PolyPointList[0].EarNext = NextEar;
         }
         else
         {
-            PolyPointList[PrevEar].NextEar = NextEar;
+            PolyPointList[PrevEar].EarNext = NextEar;
         }
 
         if (NextEar != -1)
         {
-            PolyPointList[NextEar].PrevEar = PrevEar;
+            PolyPointList[NextEar].EarPrev = PrevEar;
         }
     }
 
     private void AddEar(int Ear)
     {
-        int NextEar = PolyPointList[0].NextEar;
+        int NextEar = PolyPointList[0].EarNext;
 
-        PolyPointList[0].NextEar = Ear;
+        PolyPointList[0].EarNext = Ear;
 
-        PolyPointList[Ear].PrevEar = -1;
-        PolyPointList[Ear].NextEar = NextEar;
+        PolyPointList[Ear].EarPrev = -1;
+        PolyPointList[Ear].EarNext = NextEar;
 
         PolyPointList[Ear].isEar = true;
 
         if (NextEar != -1)
         {
-            PolyPointList[NextEar].PrevEar = Ear;
+            PolyPointList[NextEar].EarPrev = Ear;
         }
     }
 
     private void RemoverReflective(int P)
     {
-        int PrevRefl = PolyPointList[P].PrevRefl;
-        int NextRefl = PolyPointList[P].NextRefl;
+        int PrevRefl = PolyPointList[P].ReflPrev;
+        int NextRefl = PolyPointList[P].ReflNext;
 
         if (PrevRefl == -1)
         {
-            PolyPointList[0].NextRefl = NextRefl;
+            PolyPointList[0].ReflNext = NextRefl;
         }
         else
         {
-            PolyPointList[PrevRefl].NextRefl = NextRefl;
+            PolyPointList[PrevRefl].ReflNext = NextRefl;
         }
 
         if (NextRefl != -1)
         {
-            PolyPointList[NextRefl].PrevRefl = PrevRefl;
+            PolyPointList[NextRefl].ReflPrev = PrevRefl;
         }
     }
 
     private void AddReflective(int P)
     {
-        int NextRefl = PolyPointList[0].NextRefl;
+        int NextRefl = PolyPointList[0].ReflNext;
 
-        PolyPointList[0].NextRefl = P;
+        PolyPointList[0].ReflNext = P;
 
-        PolyPointList[P].PrevRefl = -1;
-        PolyPointList[P].NextRefl = NextRefl;
+        PolyPointList[P].ReflPrev = -1;
+        PolyPointList[P].ReflNext = NextRefl;
 
         if (NextRefl != -1)
         {
-            PolyPointList[NextRefl].PrevRefl = P;
+            PolyPointList[NextRefl].ReflPrev = P;
         }
     }
 
     private void RemoveP(int P)
     {
-        int NextP = PolyPointList[P].NextP;
-        int PrevP = PolyPointList[P].PrevP;
+        int NextP = PolyPointList[P].PointNext;
+        int PrevP = PolyPointList[P].PointPrev;
 
-        PolyPointList[PrevP].NextP = NextP;
-        PolyPointList[NextP].PrevP = PrevP;
+        PolyPointList[PrevP].PointNext = NextP;
+        PolyPointList[NextP].PointPrev = PrevP;
 
-        if (PolyPointList[0].NextP == P)
-            PolyPointList[0].NextP = NextP;
+        if (PolyPointList[0].PointNext == P)
+            PolyPointList[0].PointNext = NextP;
 
         --Pointcount;
     }

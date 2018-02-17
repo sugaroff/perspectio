@@ -13,6 +13,9 @@ public class MainCamera : MonoBehaviour
     private void Awake()
     {
         animator = GetComponent<Animator>();
+#if FAST_EXECUTION
+        animator.speed = 100;
+#endif
     }
 
 
