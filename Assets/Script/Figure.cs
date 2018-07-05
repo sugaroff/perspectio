@@ -18,7 +18,7 @@ public class Figure : MonoBehaviour
     public void FadeOut()
     {
         if (fadeout)
-        fadeInOut.FadeOut();
+            fadeInOut.FadeOut();
     }
 
     public void FadeIn()

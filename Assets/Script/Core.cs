@@ -32,20 +32,13 @@ public class Core : MonoBehaviour
 
     public void StartLevel()
     {
-        StartCoroutine("StartingAnimations");
+        StartingAnimations();
     }
 
-    IEnumerator StartingAnimations()
+    void StartingAnimations()
     {
-#if FAST_EXECUTION
-        mainCamera.MoveToFigure();
-        yield return null;
-#else
-        yield return new WaitForSeconds(2);
-
         mainCamera.MoveToFigure();
         figure.FadeOut();
-#endif
     }
 
     #region Events

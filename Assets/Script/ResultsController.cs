@@ -46,7 +46,7 @@ public class ResultsController : MonoBehaviour {
                 List<Vector3> points = ConvertIntPointsToVectors3(polygon);
                 points.Reverse();
                 polRenderer.Points = points;
-                polRenderer.Mat = Resources.Load("Polygon", typeof(Material)) as Material;
+                polRenderer.Mat = Resources.Load<Material>("Polygon");
             }
         }
     }
